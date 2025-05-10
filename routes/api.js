@@ -42,7 +42,10 @@ router.get('/user/profile', authenticateToken, async (req, res) => {
   res.json({
     name: dbUser.name,
     email: dbUser.email,
-    subscribed: isStillSubscribed  // ✅ true = 有效訂閱 / false = 過期
+    subscribed: isStillSubscribed,  // ✅ true = 有效訂閱 / false = 過期
+    expiredDate: isStillSubscribed
+    ? new Date(new Date(dbUser.subscribedAt).getTime() + 30 * 24 * 60 * 60 * 1000)
+    : null, // 📅 計算過期時間（如果有訂閱的話）
   })
 })
 
@@ -73,3 +76,4 @@ router.post('/subscribe', authenticateToken, async (req, res) => {
 
 // 🚪 把這組路由功能匯出，讓 server.js 可以載入它
 module.exports = router
+// Compare this snippet from server.js:
